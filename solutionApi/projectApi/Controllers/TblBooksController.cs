@@ -22,9 +22,23 @@ namespace projectApi.Controllers
 
         // GET: api/TblBooks
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<TblBook>>> GetTblBooks()
+        public async Task<ActionResult<IEnumerable<TblBook>>> GetTblBooks( bool? inStock,int? skip,int? take)
         {
-            return await _context.TblBooks.ToListAsync();
+            var books = _context.TblBooks.AsQueryable();
+            if (inStock!=null)
+            {
+                books = _context.TblBooks.Where(i => i.Quantity>0);
+            }
+            if (skip!=null)
+            {
+                books = books.Skip((int) skip);
+            }
+            if (take != null)
+            {
+                books = books.Take((int)take);
+            }
+
+            return await books.ToListAsync();
         }
 
         // GET: api/TblBooks/5
