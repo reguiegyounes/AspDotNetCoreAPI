@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using projectApi.Models;
+using BC = BCrypt.Net.BCrypt;
 
 namespace projectApi.Controllers
 {
@@ -77,6 +78,7 @@ namespace projectApi.Controllers
         [HttpPost]
         public async Task<ActionResult<TblUser>> PostTblUser(TblUser tblUser)
         {
+            tblUser.Password = BC.HashPassword(tblUser.Password);
             _context.TblUsers.Add(tblUser);
             await _context.SaveChangesAsync();
 
