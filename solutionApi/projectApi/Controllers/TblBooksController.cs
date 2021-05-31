@@ -1,14 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using projectApi.Models;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace projectApi.Controllers
 {
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class TblBooksController : ControllerBase
@@ -22,16 +22,16 @@ namespace projectApi.Controllers
 
         // GET: api/TblBooks
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<TblBook>>> GetTblBooks( bool? inStock,int? skip,int? take)
+        public async Task<ActionResult<IEnumerable<TblBook>>> GetTblBooks(bool? inStock, int? skip, int? take)
         {
             var books = _context.TblBooks.AsQueryable();
-            if (inStock!=null)
+            if (inStock != null)
             {
-                books = _context.TblBooks.Where(i => i.Quantity>0);
+                books = _context.TblBooks.Where(i => i.Quantity > 0);
             }
-            if (skip!=null)
+            if (skip != null)
             {
-                books = books.Skip((int) skip);
+                books = books.Skip((int)skip);
             }
             if (take != null)
             {

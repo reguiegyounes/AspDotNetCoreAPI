@@ -1,13 +1,13 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using Microsoft.IdentityModel.Tokens;
 using projectApi.Models;
 using System;
-using System.Threading.Tasks;
-using System.Security.Claims;
 using System.IdentityModel.Tokens.Jwt;
-using Microsoft.IdentityModel.Tokens;
+using System.Security.Claims;
 using System.Text;
-using Microsoft.EntityFrameworkCore;
+using System.Threading.Tasks;
 
 namespace projectApi.Controllers
 {
@@ -15,7 +15,7 @@ namespace projectApi.Controllers
     [ApiController]
     public class TokenController : ControllerBase
     {
-        public IConfiguration _configuration; 
+        public IConfiguration _configuration;
         private readonly dbBooksEssaContext _context;
 
         public TokenController(IConfiguration config, dbBooksEssaContext context)
@@ -24,14 +24,13 @@ namespace projectApi.Controllers
             _context = context;
         }
 
-
         [HttpPost]
         public async Task<ActionResult> PostUser(TblUser userData)
         {
-            if(userData!=null && userData.Email!=null && userData.Password!=null)
+            if (userData != null && userData.Email != null && userData.Password != null)
             {
                 var user = await GetUser(userData.Email, userData.Password);
-                if (user !=null)
+                if (user != null)
                 {
                     var claims = new[]
                     {
@@ -50,8 +49,8 @@ namespace projectApi.Controllers
                         _configuration["Jwt:Issuer"],
                         _configuration["Jwt:Audience"],
                         claims,
-                        expires:DateTime.UtcNow.AddDays(1),
-                        signingCredentials:signIn
+                        expires: DateTime.UtcNow.AddDays(1),
+                        signingCredentials: signIn
                         );
 
                     return Ok(new JwtSecurityTokenHandler().WriteToken(token));
@@ -70,7 +69,7 @@ namespace projectApi.Controllers
 
         private async Task<TblUser> GetUser(string email, string password)
         {
-            return await _context.TblUsers.FirstOrDefaultAsync(u => u.Email==email && u.Password==password );
+            return await _context.TblUsers.FirstOrDefaultAsync(u => u.Email == email && u.Password == password);
         }
     }
 }
