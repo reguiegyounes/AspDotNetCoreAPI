@@ -8,6 +8,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
+using BC = BCrypt.Net.BCrypt;
 
 namespace projectApi.Controllers
 {
@@ -29,8 +30,9 @@ namespace projectApi.Controllers
         {
             if (userData != null && userData.Email != null && userData.Password != null)
             {
-                var user = await GetUser(userData.Email, userData.Password);
-                if (user != null)
+                //var user = await GetUser(userData.Email, userData.Password);
+                var user =await CheckEmail(userData.Email);
+                if (user != null && BC.Verify(userData.Password,user.Password))
                 {
                     var claims = new[]
                     {
@@ -69,7 +71,11 @@ namespace projectApi.Controllers
 
         private async Task<TblUser> GetUser(string email, string password)
         {
-            return await _context.TblUsers.FirstOrDefaultAsync(u => u.Email == email && u.Password == password);
+            return await _context.TblUsers.FirstOrDefaultAsync(u => u.Email == email && u.Password == BC.HashPassword(password));
+        }
+        private async Task<TblUser> CheckEmail(string email)
+        {
+            return await _context.TblUsers.FirstOrDefaultAsync(u => u.Email == email );
         }
     }
 }
