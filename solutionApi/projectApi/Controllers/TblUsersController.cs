@@ -10,7 +10,7 @@ using BC = BCrypt.Net.BCrypt;
 
 namespace projectApi.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("")]
     [ApiController]
     public class TblUsersController : ControllerBase
     {
@@ -21,6 +21,29 @@ namespace projectApi.Controllers
             _context = context;
         }
 
+        // POST: api/TblUsers
+        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+        [HttpPost("register")]
+        public async Task<ActionResult<TblUser>> PostTblUser(TblUser tblUser)
+        {
+            tblUser.Password = BC.HashPassword(tblUser.Password);
+            _context.TblUsers.Add(tblUser);
+            await _context.SaveChangesAsync();
+
+            return CreatedAtAction("GetTblUser", new { id = tblUser.UserId }, tblUser);
+        }
+        public async Task<ActionResult<TblUser>> GetTblUser(int id)
+        {
+            var tblUser = await _context.TblUsers.FindAsync(id);
+
+            if (tblUser == null)
+            {
+                return NotFound();
+            }
+
+            return tblUser;
+        }
+        /**
         // GET: api/TblUsers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<TblUser>>> GetTblUsers()
@@ -73,18 +96,6 @@ namespace projectApi.Controllers
             return NoContent();
         }
 
-        // POST: api/TblUsers
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPost]
-        public async Task<ActionResult<TblUser>> PostTblUser(TblUser tblUser)
-        {
-            tblUser.Password = BC.HashPassword(tblUser.Password);
-            _context.TblUsers.Add(tblUser);
-            await _context.SaveChangesAsync();
-
-            return CreatedAtAction("GetTblUser", new { id = tblUser.UserId }, tblUser);
-        }
-
         // DELETE: api/TblUsers/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteTblUser(int id)
@@ -105,5 +116,7 @@ namespace projectApi.Controllers
         {
             return _context.TblUsers.Any(e => e.UserId == id);
         }
+
+        **/
     }
 }
